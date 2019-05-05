@@ -38,23 +38,17 @@ static addr_t get_second_lv(addr_t addr) {
 }
 
 /* Search for page table table from the a segment table */
-static struct page_table_t * get_page_table(
-		addr_t index, 	// Segment level index
-		struct seg_table_t * seg_table) { // first level table
+static struct page_table_t* get_page_table(
+	addr_t index, 				   // segment level index
+	struct seg_table_t* seg_table) // first level table
+{	
+	if(seg_table == NULL) return NULL;
 	
-	/*
-	 * TODO: Given the Segment index [index], you must go through each
-	 * row of the segment table [seg_table] and check if the v_index
-	 * field of the row is equal to the index
-	 *
-	 * */
+	for (int i = 0; i < seg_table->size; ++i)
+	if(seg_table->table[i].v_index == index)
+		return seg_table->table[i].pages;
 
-	int i;
-	for (i = 0; i < seg_table->size; i++) {
-		// Enter your code here
-	}
 	return NULL;
-
 }
 
 /* Translate virtual address to physical address. If [virtual_addr] is valid,
@@ -82,10 +76,8 @@ static int translate(
 	int i;
 	for (i = 0; i < page_table->size; i++) {
 		if (page_table->table[i].v_index == second_lv) {
-			/* TODO: Concatenate the offset of the virtual addess
-			 * to [p_index] field of page_table->table[i] to 
-			 * produce the correct physical address and save it to
-			 * [*physical_addr]  */
+			addr_t p_index = page_table->table[i].p_index; // physical page index
+			*physical_addr = (p_index << OFFSET_LEN) | offset;
 			return 1;
 		}
 	}
