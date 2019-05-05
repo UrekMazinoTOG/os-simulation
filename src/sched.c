@@ -17,12 +17,20 @@ void init_scheduler(void) {
 }
 
 struct pcb_t* get_proc(void) {
-	struct pcb_t* proc = NULL;
-	/*TODO: get a process from [ready_queue]. If ready queue
-	 * is empty, push all processes in [run_queue] back to
-	 * [ready_queue] and return the highest priority one.
-	 * Remember to use lock to protect the queue.
-	 * */
+	struct pcb_t * proc = NULL;
+
+	pthread_mutex_lock(&queue_lock);
+
+	if(empty(&ready_queue))
+	while(!empty(&run_queue)) {
+		proc = dequeue(&run_queue);
+		enqueue(&ready_queue, proc);
+	}
+	
+	proc = dequeue(&ready_queue);
+
+	pthread_mutex_unlock(&queue_lock);
+
 	return proc;
 }
 
