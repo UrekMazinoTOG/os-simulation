@@ -13,12 +13,15 @@ static int time_slot;
 static int num_cpus;
 static int done = 0;
 
+/* arguments in thread used for loader routine */
 static struct ld_args{
 	char** path;
 	unsigned long* start_time;
 } ld_processes;
+
 int num_processes;
 
+/* arguments in thread used for cpu routine */
 struct cpu_args {
 	struct timer_id_t* timer_id;
 	int id;

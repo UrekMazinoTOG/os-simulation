@@ -1,7 +1,8 @@
 #include "../include/queue.h"
-#include <stddef.h> // macro : NULL(0)
-#include <stdint.h> // type  : int8_t
-#include <assert.h> // macro : assert()
+#include <stddef.h>  // macro : NULL(0)
+#include <stdint.h>  // type  : int8_t
+#include <stdbool.h> // type  : bool
+#include <assert.h>  // macro : assert()
 #define swap(X,Y) { __typeof__(X) _T = X; X = Y; Y = _T; }
 
 // Utility function
@@ -12,12 +13,12 @@ int8_t right (int8_t i) {return (i<<1) + 2;}
 static void heapifyUp  (struct queue_t * q, int8_t i);
 static void heapifyDown(struct queue_t * q, int8_t i);
 
-int empty(struct queue_t * q) {
+bool empty(struct queue_t * q) {
 	assert(q != NULL);
 	return q->size == 0;
 }
 
-int full(struct queue_t * q) {
+bool full(struct queue_t * q) {
 	assert(q != NULL);
 	return q->size == MAX_QUEUE_SIZE;
 }

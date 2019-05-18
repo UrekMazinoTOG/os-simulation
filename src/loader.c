@@ -29,30 +29,30 @@ static enum ins_opcode_t get_opcode(char* opt) {
 	}
 }
 
-struct pcb_t* load(const char* path) {
+pcb_t* load(const char* path) {
 	/* Create new PCB for the new process */
-	struct pcb_t* proc = (struct pcb_t*)malloc(sizeof(struct pcb_t));
-	proc->pid = avail_pid;
-	avail_pid++;
-	proc->seg_table =
-		(struct seg_table_t*)malloc(sizeof(struct seg_table_t));
-	proc->bp = PAGE_SIZE;
-	proc->pc = 0;
+	pcb_t* proc 	= (pcb_t*)malloc(sizeof(pcb_t));
+	proc->pid 		= avail_pid++;
+	proc->seg_table = (seg_table_t*)malloc(sizeof(seg_table_t));
+	proc->bp 		= PAGE_SIZE;
+	proc->pc 		= 0;
 
 	/* Read process code from file */
-	FILE* file;
+	FILE* file = NULL;
 	if ((file = fopen(path, "r")) == NULL) {
 		printf("Cannot find process description at '%s'\n", path);
 		exit(1);		
 	}
+	
 	char opcode[10];
-	proc->code = (struct code_seg_t*)malloc(sizeof(struct code_seg_t));
+
+	proc->code = (code_seg_t*)malloc(sizeof(code_seg_t));
+
 	fscanf(file, "%u %u", &proc->priority, &proc->code->size);
-	proc->code->text = (struct inst_t*)malloc(
-		sizeof(struct inst_t) * proc->code->size
-	);
-	uint32_t i = 0;
-	for (i = 0; i < proc->code->size; i++) {
+
+	proc->code->text = (inst_t*)malloc(sizeof(inst_t)*proc->code->size);
+
+	for (uint32_t i = 0; i < proc->code->size; i++) {
 		fscanf(file, "%s", opcode);
 		proc->code->text[i].opcode = get_opcode(opcode);
 		switch(proc->code->text[i].opcode) {

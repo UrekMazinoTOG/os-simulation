@@ -4,12 +4,12 @@
 
 static pthread_t _timer;
 
-struct timer_id_container_t {
+typedef struct timer_id_container_t {
 	struct timer_id_t id;
 	struct timer_id_container_t* next;
-};
+} timer_id_container_t;
 
-static struct timer_id_container_t* dev_list = NULL;
+static timer_id_container_t* dev_list = NULL;
 
 static uint64_t _time;
 
@@ -24,7 +24,7 @@ static void* timer_routine(void* args) {
 		int event = 0;
 		/* Wait for all devices have done the job in current
 		 * time slot */
-		struct timer_id_container_t* temp;
+		timer_id_container_t* temp;
 		for (temp = dev_list; temp != NULL; temp = temp->next) {
 			pthread_mutex_lock(&temp->id.event_lock);
 			while (!temp->id.done && !temp->id.fsh) {
@@ -95,10 +95,8 @@ struct timer_id_t* attach_event() {
 	if (timer_started) {
 		return NULL;
 	}else{
-		struct timer_id_container_t* container =
-			(struct timer_id_container_t*)malloc(
-				sizeof(struct timer_id_container_t)		
-			);
+		timer_id_container_t* container = 
+			(timer_id_container_t*)malloc(sizeof(timer_id_container_t));
 		container->id.done = 0;
 		container->id.fsh = 0;
 		pthread_cond_init(&container->id.event_cond, NULL);
@@ -120,7 +118,7 @@ void stop_timer() {
 	timer_stop = 1;
 	pthread_join(_timer, NULL);
 	while (dev_list != NULL) {
-		struct timer_id_container_t* temp = dev_list;
+		timer_id_container_t* temp = dev_list;
 		dev_list = dev_list->next;
 		pthread_cond_destroy(&temp->id.event_cond);
 		pthread_mutex_destroy(&temp->id.event_lock);

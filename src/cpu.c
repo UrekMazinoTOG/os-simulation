@@ -1,10 +1,12 @@
 #include "../include/cpu.h"
 #include "../include/mem.h"
 
+/* do something to use CPU */
 static int calc(struct pcb_t* proc) {
 	return ((unsigned long)proc & 0UL);
 }
 
+/* allocate [size] memory for process [proc] on register [reg_index] */
 static int alloc(struct pcb_t* proc, uint32_t size, uint32_t reg_index) {
 	addr_t addr = alloc_mem(size, proc);
 	if (addr == 0) {
@@ -15,16 +17,19 @@ static int alloc(struct pcb_t* proc, uint32_t size, uint32_t reg_index) {
 	}
 }
 
+/* deallocate memory at register [reg_index] of process [proc] */
 static int free_data(struct pcb_t* proc, uint32_t reg_index) {
 	return free_mem(proc->regs[reg_index], proc);
 }
 
+/** read a byte at address which equal to value of register 
+ *  [source + offset] and save to register [destination] */
 static int read(
-		struct pcb_t* proc, // Process executing the instruction
-		uint32_t source, // Index of source register
-		uint32_t offset, // Source address = [source] + [offset]
-		uint32_t destination) { // Index of destination register
-	
+	struct pcb_t* proc,   // Process executing the instruction
+	uint32_t source, 	  // Index of source register
+	uint32_t offset, 	  // Source address = [source] + [offset]
+	uint32_t destination) // Index of destination register
+{
 	BYTE data;
 	if (read_mem(proc->regs[source] + offset, proc,	&data)) {
 		proc->regs[destination] = data;
@@ -34,12 +39,13 @@ static int read(
 	}
 }
 
+/* write data to register */
 static int write(
-		struct pcb_t* proc, // Process executing the instruction
-		BYTE data, // Data to be wrttien into memory
-		uint32_t destination, // Index of destination register
-		uint32_t offset) { 	// Destination address =
-					// [destination] + [offset]
+	struct pcb_t* proc,   // Process executing the instruction
+	BYTE data, 			  // Data to be wrttien into memory
+	uint32_t destination, // Index of destination register
+	uint32_t offset) 	  // Destination address = [destination] + [offset]
+{
 	return write_mem(proc->regs[destination] + offset, proc, data);
 } 
 

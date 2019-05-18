@@ -7,7 +7,7 @@
 /* Execute an instruction of a process. Return 0
  * if the instruction is executed successfully.
  * Otherwise, return 1. */
-int run(struct pcb_t * proc);
+int run(pcb_t * proc);
 
 #endif
 
